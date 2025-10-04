@@ -11,9 +11,9 @@ process.on("uncaughtException", (err) => {
 });
 
 // // Config
-dotenv.config({ path: "backend/config/config.env" })
+dotenv.config({ path: "./config/config.env" })
 if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({ path: "backend/config/config.env" });
+  require("dotenv").config({ path: "./config/config.env" });
 }
 
 // Connecting to database
@@ -45,3 +45,6 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+// ✅ Vercel export
+module.exports = app

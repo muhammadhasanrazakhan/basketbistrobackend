@@ -9,6 +9,8 @@ const sendToken = (user, statusCode, res) => {
         Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
       ),
       httpOnly: true,
+      secure: true,      // ✅ Always true (ngrok HTTPS hai)
+      sameSite: "none"
     };
   
     res.status(statusCode).cookie("token", token, options).json({
@@ -16,6 +18,6 @@ const sendToken = (user, statusCode, res) => {
       user,
       token,
     });
-  };
+};
   
-  module.exports = sendToken;
+module.exports = sendToken;

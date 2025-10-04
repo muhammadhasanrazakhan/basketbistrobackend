@@ -53,12 +53,44 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const path = require("path");
-
+const cors = require("cors");
 const errorMiddleware = require("./middleware/error");
 
 if (process.env.NODE_ENV !== "PRODUCTION") {
   require("dotenv").config({ path: "backend/config/config.env" });
 }
+
+// app.use((req, res, next) => {
+//   res.setHeader('Bypass-Tunnel-Reminder', 'true');
+//   next();
+// });
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://basketbistro.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log('Request from origin:', origin);
+      
+      // Vercel functions ke liye undefined origin allow
+      if (!origin) return callback(null, true);
+
+      if (
+        allowedOrigins.includes(origin) ||
+        (origin && origin.includes("vercel.app"))
+      ) {
+        return callback(null, true);
+      }
+
+      console.log('❌ Blocked origin:', origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
@@ -75,10 +107,10 @@ app.use("/api/bb", user);
 app.use("/api/bb", order);
 app.use("/api/bb", offer);
 
-app.use(express.static(path.join(__dirname, "../frontend/build")));
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
-});
+// app.use(express.static(path.join(__dirname, "../frontend/build")));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
+// });
 
 app.use(errorMiddleware);
 
